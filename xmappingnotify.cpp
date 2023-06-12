@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 				* Change cursor
 				*
 				* https://stackoverflow.com/questions/73833171/how-to-get-the-active-window-using-x11-xlib-c-api
+				* https://github.com/UltimateHackingKeyboard/current-window-linux/blob/master/get-current-window.c
 				*/
 
 				// Get default root window of display
@@ -105,6 +106,8 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
+	XCloseDisplay(display);
 
 	return 0;
 }
