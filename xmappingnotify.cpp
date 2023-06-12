@@ -14,25 +14,26 @@
 int main(int argc, char **argv)
 {
 	XEvent   e;
-	Display *d {};
 
-	if (!(d = ::XOpenDisplay(NULL))) {
+	Display *display = ::XOpenDisplay(NULL);
+	if (display == nullptr) {
 		std::cerr << "cannot open display" << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
 
-	::XKeysymToKeycode(d, XK_F1);
+	::XKeysymToKeycode(display, XK_F1);
 
 	int xkbEventType {};
-	::XkbQueryExtension(d, 0, &xkbEventType, 0, 0, 0);
-	::XkbSelectEventDetails(d, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
+	::XkbQueryExtension(display, 0, &xkbEventType, 0, 0, 0);
+	::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
+		XkbGroupStateMask);
 
-	::XSync(d, False);
+	::XSync(display, False);
 
 	int i {};
 
 	while (1) {
-		::XNextEvent(d, &e);
+		::XNextEvent(display, &e);
 
 		if (e.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&e;
@@ -51,12 +52,12 @@ int main(int argc, char **argv)
 				*/
 
 				// Get default root window of display
-				Window root = DefaultRootWindow(d);
+				Window rootWin = DefaultRootWindow(display);
 
 				// Get the atom of the property
-				Atom       property = ::XInternAtom(d, "_NET_ACTIVE_WINDOW", False);
+				Atom       property = ::XInternAtom(display, "_NET_ACTIVE_WINDOW", False);
 				const Bool isDelete {False};
-				// // https://docs.rs/x11/0.0.36/x11/xlib/constant.XA_WINDOW.html
+				// https://docs.rs/x11/0.0.36/x11/xlib/constant.XA_WINDOW.html
 				const Atom XA_WINDOW {33};
 
 				// Return values
@@ -67,8 +68,8 @@ int main(int argc, char **argv)
 				unsigned char *data {};
 
 				int iRv = ::XGetWindowProperty(
-					d,
-					root,
+					display,
+					rootWin,
 					property,
 					0,              // no offset
 					1,              // one Window
@@ -95,11 +96,11 @@ int main(int argc, char **argv)
 
 				const auto x11_cursor_font_id = (i % 2 == 0) ? XC_arrow : XC_dotbox;
 
-				Cursor cursor = ::XCreateFontCursor(d, x11_cursor_font_id);
+				Cursor cursor = ::XCreateFontCursor(display, x11_cursor_font_id);
 
-				::XDefineCursor(d, activeWin, cursor);
+				::XDefineCursor(display, activeWin, cursor);
 
-				::XFreeCursor(d, cursor);
+				::XFreeCursor(display, cursor);
 				::XFree(data);
 			}
 		}
