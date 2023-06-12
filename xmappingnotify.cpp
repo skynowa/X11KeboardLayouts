@@ -13,8 +13,6 @@
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-	XEvent   e;
-
 	Display *display = ::XOpenDisplay(NULL);
 	if (display == nullptr) {
 		std::cerr << "cannot open display" << std::endl;
@@ -33,10 +31,11 @@ int main(int argc, char **argv)
 	int i {};
 
 	while (1) {
-		::XNextEvent(display, &e);
+		XEvent event {};
+		::XNextEvent(display, &event);
 
-		if (e.type == xkbEventType) {
-			auto *xkbEvent = (XkbEvent *)&e;
+		if (event.type == xkbEventType) {
+			auto *xkbEvent = (XkbEvent *)&event;
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
 				const int lang = xkbEvent->state.group;
 				if (lang == 1) {
