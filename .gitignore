@@ -1,0 +1,11 @@
+*~
+
+# Bin
+*.o
+xkblayout-state
+xmappingnotify
+
+# IDE
+.project
+.cproject
+.settings/
