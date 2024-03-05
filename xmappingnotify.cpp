@@ -99,7 +99,7 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     Pixmap mask_pixmap = None;
 
     // Load XPM file
-    Status status = ::XpmReadFileToPixmap(display, root, xpm_filename, &cursor_pixmap, &mask_pixmap, NULL);
+    Status status = ::XpmReadFileToPixmap(display, root, xpm_filename, &cursor_pixmap, &mask_pixmap, nullptr);
     if (status != XpmSuccess) {
         fprintf(stderr, "Error loading XPM file\n");
         return {};
@@ -112,18 +112,18 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 
     // Define colors and hot spot coordinates
     XColor fg {};
-    fg.pixel = 0;
-    fg.red   = 0;
-    fg.green = 0;
-    fg.blue  = 0;
-    fg.flags = DoRed | DoGreen | DoBlue;
+    // fg.pixel = 0;
+    // fg.red   = 0;
+    // fg.green = 0;
+    // fg.blue  = 0;
+    // fg.flags = DoRed | DoGreen | DoBlue;
 
 	XColor bg {};
-    bg.pixel = 0xffffffff;
-    bg.red   = 0xffff;
-    bg.green = 0xffff;
-    bg.blue  = 0xffff;
-    bg.flags = DoRed | DoGreen | DoBlue;
+    // bg.pixel = 0xffffffff;
+    // bg.red   = 0xffff;
+    // bg.green = 0xffff;
+    // bg.blue  = 0xffff;
+    // bg.flags = DoRed | DoGreen | DoBlue;
 
     unsigned int x_hot = 2, y_hot = 2;
 
@@ -131,8 +131,6 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     Cursor cursor = ::XCreatePixmapCursor(display, cursor_pixmap, mask_pixmap, &fg, &bg, x_hot, y_hot);
     if (cursor == None) {
         fprintf(stderr, "Error creating cursor from pixmap\n");
-        XFreePixmap(display, cursor_pixmap);
-        XFreePixmap(display, mask_pixmap);
         return {};
     }
 
@@ -160,13 +158,13 @@ cursorLoad(
     ::XFlush(display);
 
     // Clean up
-    ::XFreeCursor(display, cursor);
+    /// ::XFreeCursor(display, cursor);
 }
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-	const std::string cursor_en = "/home/skynowa/Projects/XMmappingNotify/Data/us.xpm";
-	const std::string cursor_ru = "/home/skynowa/Projects/XMmappingNotify/Data/ua.xpm";
+	const std::string cursor_en = "/home/skynowa/Projects/XMmappingNotify/Data/cc.xpm";
+	const std::string cursor_ru = "/home/skynowa/Projects/XMmappingNotify/Data/cc.xpm";
 
 	Display *display = ::XOpenDisplay(NULL);
 	if (display == nullptr) {
@@ -240,9 +238,9 @@ int main(int argc, char **argv)
 
 				Window activeWin = ((Window *) data)[0];
 
-				++ i;
-
 				if (0) {
+					++ i;
+
 					const auto x11_cursor_font_id = (i % 2 == 0) ? XC_arrow : XC_dotbox;
 
 					Cursor cursor = ::XCreateFontCursor(display, x11_cursor_font_id);
