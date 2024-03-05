@@ -135,8 +135,8 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     }
 
     // Clean up
-    XFreePixmap(display, mask_pixmap);
-    XFreePixmap(display, cursor_pixmap);
+    // XFreePixmap(display, mask_pixmap);
+    // XFreePixmap(display, cursor_pixmap);
 
 	return cursor;
 }
@@ -153,8 +153,6 @@ cursorLoad(
 
     // Set the cursor for the root window
     ::XDefineCursor(display, root, cursor);
-
-    // Flush and wait
     ::XFlush(display);
 
     // Clean up
@@ -179,6 +177,7 @@ int main(int argc, char **argv)
 
 	int xkbEventType {};
 	::XkbQueryExtension(display, 0, &xkbEventType, 0, 0, 0);
+
 	::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
 		XkbGroupStateMask);
 
@@ -193,6 +192,20 @@ int main(int argc, char **argv)
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
+				const int lang = xkbEvent->state.group;
+				std::cout << "En: " << lang << " - start" << std::endl;
+
+				if (lang == 0) {
+					::cursorLoad(display, rootWin, cursor_en);
+				} else {
+					/// cursor = ::cursorLoad(display, rootWin);
+					::cursorLoad(display, rootWin, cursor_ru);
+				}
+
+				std::cout << "Ru: " << lang << " - end" << std::endl;
+
+				continue;
+
 			   /**
 				* Change cursor
 				*
@@ -250,18 +263,6 @@ int main(int argc, char **argv)
 					::XFreeCursor(display, cursor);
 					::XFree(data);
 				}
-
-				const int lang = xkbEvent->state.group;
-				std::cout << "En: " << lang << " - start" << std::endl;
-
-				if (lang == 0) {
-					::cursorLoad(display, rootWin, cursor_en);
-				} else {
-					/// cursor = ::cursorLoad(display, rootWin);
-					::cursorLoad(display, rootWin, cursor_ru);
-				}
-
-				std::cout << "Ru: " << lang << " - end" << std::endl;
 			}
 
 
