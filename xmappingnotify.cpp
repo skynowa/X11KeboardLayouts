@@ -112,18 +112,18 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 
     // Define colors and hot spot coordinates
     XColor fg {};
-    // fg.pixel = 0;
-    // fg.red   = 0;
-    // fg.green = 0;
-    // fg.blue  = 0;
-    // fg.flags = DoRed | DoGreen | DoBlue;
+    fg.pixel = 0;
+    fg.red   = 0;
+    fg.green = 0;
+    fg.blue  = 0;
+    fg.flags = DoRed | DoGreen | DoBlue;
 
 	XColor bg {};
-    // bg.pixel = 0xffffffff;
-    // bg.red   = 0xffff;
-    // bg.green = 0xffff;
-    // bg.blue  = 0xffff;
-    // bg.flags = DoRed | DoGreen | DoBlue;
+    bg.pixel = 0xffffffff;
+    bg.red   = 0xffff;
+    bg.green = 0xffff;
+    bg.blue  = 0xffff;
+    bg.flags = DoRed | DoGreen | DoBlue;
 
     unsigned int x_hot = 2, y_hot = 2;
 
@@ -143,7 +143,7 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 	return cursor;
 }
 //-------------------------------------------------------------------------------------------------
-Cursor
+void
 cursorLoad(
 	Display *display,
 	Window  &root,
@@ -161,8 +161,6 @@ cursorLoad(
 
     // Clean up
     ::XFreeCursor(display, cursor);
-
-	return cursor;
 }
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -189,8 +187,6 @@ int main(int argc, char **argv)
 	::XSync(display, False);
 
 	int i {};
-
-	Cursor cursor {};
 
 	while (1) {
 		XEvent event {};
@@ -261,13 +257,12 @@ int main(int argc, char **argv)
 				std::cout << "En: " << lang << " - start" << std::endl;
 
 				if (lang == 0) {
-					cursor = ::cursorLoad(display, rootWin, cursor_en);
+					::cursorLoad(display, rootWin, cursor_en);
 				} else {
 					/// cursor = ::cursorLoad(display, rootWin);
-					cursor = ::cursorLoad(display, rootWin, cursor_ru);
+					::cursorLoad(display, rootWin, cursor_ru);
 				}
 
-				std::cout << "Cursor: " << cursor << std::endl;
 				std::cout << "Ru: " << lang << " - end" << std::endl;
 			}
 
