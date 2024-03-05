@@ -3,6 +3,8 @@
  * \brief
  *
  * \see   https://stackoverflow.com/questions/35569562/how-to-catch-keyboard-layout-change-event-and-get-current-new-keyboard-layout-on
+ *
+ * sudo apt-get install libxpm-dev
  */
 
 
@@ -13,6 +15,9 @@
 #include <X11/XKBlib.h>
 #include <X11/cursorfont.h>
 #include <X11/Xutil.h>
+#include <stdio.h>
+#include <X11/Xlib.h>
+#include <X11/xpm.h>
 //-------------------------------------------------------------------------------------------------
 static const unsigned char xlib_spinning_bits[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
@@ -42,8 +47,18 @@ static const unsigned char xlib_spinning_mask_bits[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 //-------------------------------------------------------------------------------------------------
+int
+customErrorHandler(Display *display, XErrorEvent *errorEvent)
+{
+    char errorText[1024];
+    XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
+    fprintf(stderr, "X Error: %s\n", errorText);
+
+    return 0; // Return 0 to indicate that the error has been handled
+}
+//-------------------------------------------------------------------------------------------------
 Cursor
-cursorCreateSpinning (Display * dpy)
+cursorCreate1(Display * dpy)
 {
     XColor fg;
     fg.pixel = 0;
@@ -75,13 +90,68 @@ cursorCreateSpinning (Display * dpy)
 }
 //-------------------------------------------------------------------------------------------------
 Cursor
+cursorCreate2(Display *display, Window &root, const char *xpm_filename)
+{
+    // Set up custom error handler
+    // XSetErrorHandler(customErrorHandler);
+
+    Pixmap cursor_pixmap = None;
+    Pixmap mask_pixmap = None;
+
+    // Load XPM file
+    Status status = ::XpmReadFileToPixmap(display, root, xpm_filename, &cursor_pixmap, &mask_pixmap, NULL);
+    if (status != XpmSuccess) {
+        fprintf(stderr, "Error loading XPM file\n");
+        return {};
+    }
+
+    if (cursor_pixmap == None || mask_pixmap == None) {
+        fprintf(stderr, "Error loading XPM file\n");
+        return {};
+    }
+
+    // Define colors and hot spot coordinates
+    XColor fg {};
+    // fg.pixel = 0;
+    // fg.red   = 0;
+    // fg.green = 0;
+    // fg.blue  = 0;
+    // fg.flags = DoRed | DoGreen | DoBlue;
+
+	XColor bg {};
+    // bg.pixel = 0xffffffff;
+    // bg.red   = 0xffff;
+    // bg.green = 0xffff;
+    // bg.blue  = 0xffff;
+    // bg.flags = DoRed | DoGreen | DoBlue;
+
+    unsigned int x_hot = 2, y_hot = 2;
+
+    // Create the cursor
+    Cursor cursor = ::XCreatePixmapCursor(display, cursor_pixmap, mask_pixmap, &fg, &bg, x_hot, y_hot);
+    if (cursor == None) {
+        fprintf(stderr, "Error creating cursor from pixmap\n");
+        XFreePixmap(display, cursor_pixmap);
+        XFreePixmap(display, mask_pixmap);
+        return {};
+    }
+
+    // Clean up
+    XFreePixmap(display, mask_pixmap);
+    XFreePixmap(display, cursor_pixmap);
+
+	return cursor;
+}
+//-------------------------------------------------------------------------------------------------
+Cursor
 cursorLoad(
 	Display *display,
-	Window  &root
+	Window  &root,
+	const std::string &cursorFile
 )
 {
-
-	Cursor cursor = ::cursorCreateSpinning(display);
+	// Cursor cursor = ::cursorCreate1(display);
+	Cursor cursor = ::cursorCreate2(display, root, cursorFile.c_str());
 
     // Set the cursor for the root window
     ::XDefineCursor(display, root, cursor);
@@ -90,18 +160,24 @@ cursorLoad(
     ::XFlush(display);
 
     // Clean up
-    /// ::XFreeCursor(display, cursor);
+    ::XFreeCursor(display, cursor);
 
 	return cursor;
 }
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
+	const std::string cursor_en = "/home/skynowa/Projects/XMmappingNotify/Data/us.xpm";
+	const std::string cursor_ru = "/home/skynowa/Projects/XMmappingNotify/Data/ua.xpm";
+
 	Display *display = ::XOpenDisplay(NULL);
 	if (display == nullptr) {
 		std::cerr << "cannot open display" << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	// Get default root window of display
+	Window rootWin = DefaultRootWindow(display);
 
 	::XKeysymToKeycode(display, XK_F1);
 
@@ -114,31 +190,15 @@ int main(int argc, char **argv)
 
 	int i {};
 
+	Cursor cursor {};
+
 	while (1) {
 		XEvent event {};
 		::XNextEvent(display, &event);
 
-		Cursor cursor {};
-
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
-				// Get default root window of display
-				Window rootWin = DefaultRootWindow(display);
-
-				const int lang = xkbEvent->state.group;
-				if (lang == 0) {
-					std::cout << "En: " << lang << std::endl;
-
-					if (cursor != 0) {
-						::XFreeCursor(display, cursor);
-					}
-				} else {
-					std::cout << "Ru: " << lang << std::endl;
-
-					cursor = ::cursorLoad(display, rootWin);
-				}
-
 			   /**
 				* Change cursor
 				*
@@ -186,15 +246,32 @@ int main(int argc, char **argv)
 
 				++ i;
 
-				const auto x11_cursor_font_id = (i % 2 == 0) ? XC_arrow : XC_dotbox;
+				if (0) {
+					const auto x11_cursor_font_id = (i % 2 == 0) ? XC_arrow : XC_dotbox;
 
-				Cursor cursor = ::XCreateFontCursor(display, x11_cursor_font_id);
+					Cursor cursor = ::XCreateFontCursor(display, x11_cursor_font_id);
 
-				::XDefineCursor(display, activeWin, cursor);
+					::XDefineCursor(display, activeWin, cursor);
 
-				::XFreeCursor(display, cursor);
-				::XFree(data);
+					::XFreeCursor(display, cursor);
+					::XFree(data);
+				}
+
+				const int lang = xkbEvent->state.group;
+				std::cout << "En: " << lang << " - start" << std::endl;
+
+				if (lang == 0) {
+					cursor = ::cursorLoad(display, rootWin, cursor_en);
+				} else {
+					/// cursor = ::cursorLoad(display, rootWin);
+					cursor = ::cursorLoad(display, rootWin, cursor_ru);
+				}
+
+				std::cout << "Cursor: " << cursor << std::endl;
+				std::cout << "Ru: " << lang << " - end" << std::endl;
 			}
+
+
 		}
 	}
 
