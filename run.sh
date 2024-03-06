@@ -1,1 +1,3 @@
-./xmappingnotify | xargs -I {} echo "test" {}
+# ./xmappingnotify | xargs -I {} echo "test" {}
+
+./xmappingnotify

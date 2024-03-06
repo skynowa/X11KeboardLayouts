@@ -19,6 +19,9 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
+
+#include <StdStream/StdStream.h>
+#include <StdTest/StdTest.h>
 //-------------------------------------------------------------------------------------------------
 int
 customErrorHandler(
@@ -29,7 +32,7 @@ customErrorHandler(
     char errorText[1024] {};
     ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
-    fprintf(stderr, "X Error: %s\n", errorText);
+    fprintf(stderr, "[Error] %d - %s\n", errorEvent->error_code, errorText);
 
     return 0; // Return 0 to indicate that the error has been handled
 }
@@ -103,9 +106,11 @@ cursorCreate2(
 	const char *xpmFilePath
 )
 {
-	if (0) {
-		::XSetErrorHandler(customErrorHandler);
-	}
+	STD_TRACE_FUNC
+
+	std::cout << STD_TRACE_VAR(display) << std::endl;
+	std::cout << STD_TRACE_VAR(root) << std::endl;
+	std::cout << STD_TRACE_VAR(xpmFilePath) << std::endl;
 
     Pixmap cursor_pixmap {};
     Pixmap mask_pixmap {};
@@ -113,15 +118,11 @@ cursorCreate2(
     // Load XPM file
     Status status = ::XpmReadFileToPixmap(display, root, xpmFilePath, &cursor_pixmap, &mask_pixmap,
         nullptr);
-    if (status != XpmSuccess) {
-        fprintf(stderr, "Error loading XPM file\n");
-        return {};
-    }
+    STD_TEST(status == XpmSuccess);
+    STD_TEST(cursor_pixmap != None);
+    STD_TEST(mask_pixmap != None);
 
-    if (cursor_pixmap == None || mask_pixmap == None) {
-        fprintf(stderr, "Error loading pixmap\n");
-        return {};
-    }
+    STD_TRACE_POINT
 
     // Define colors and hot spot coordinates
     XColor fg {};
@@ -132,10 +133,9 @@ cursorCreate2(
 
     // Create the cursor
     Cursor cursor = ::XCreatePixmapCursor(display, cursor_pixmap, mask_pixmap, &fg, &bg, x_hot, y_hot);
-    if (cursor == None) {
-        fprintf(stderr, "Error creating cursor from pixmap\n");
-        return {};
-    }
+    STD_TEST(cursor != None);
+
+    STD_TRACE_POINT
 
     // Clean up
     // ::XFreePixmap(display, mask_pixmap);
@@ -157,12 +157,26 @@ cursorLoad(
 	const std::string &cursorFilePath
 )
 {
+	int iRv {None};
+
+	STD_TRACE_POINT
+
 	// Cursor cursor = ::cursorCreate1(display);
 	Cursor cursor = ::cursorCreate2(display, root, cursorFilePath.c_str());
+	STD_TEST(cursor != None);
+
+	STD_TRACE_POINT
 
     // Set the cursor for the root window
-    ::XDefineCursor(display, root, cursor);
-    ::XFlush(display);
+    iRv = ::XDefineCursor(display, root, cursor);
+    STD_TEST(iRv != None);
+
+    STD_TRACE_POINT
+
+    iRv = ::XFlush(display);
+    STD_TEST(iRv != None);
+
+    STD_TRACE_POINT
 
     // Clean up
     /// ::XFreeCursor(display, cursor);
@@ -233,6 +247,10 @@ int main(int argc, char **argv)
 	// Get default root window of display
 	Window rootWin = DefaultRootWindow(display);
 
+	if (1) {
+		::XSetErrorHandler(customErrorHandler);
+	}
+
 	::XKeysymToKeycode(display, XK_F1);
 
 	int xkbEventType {};
@@ -246,8 +264,13 @@ int main(int argc, char **argv)
 	int i {};
 
 	while (true) {
+		std::cout << std::endl;
+		std::cout << "XNextEvent - watch..." << std::endl;
+
 		XEvent event {};
 		::XNextEvent(display, &event);
+
+		std::cout << "XNextEvent - fire" << std::endl;
 
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
@@ -267,11 +290,12 @@ int main(int argc, char **argv)
 				///
 				continue;
 
-				Window activeWin = ::activeWindow(display, rootWin);
-
 				if (0) {
+					Window activeWin = ::activeWindow(display, rootWin);
+
 					++ i;
 
+					// https://tronche.com/gui/x/xlib/appendix/b/
 					const auto x11_cursor_font_id = (i % 2 == 0) ? XC_arrow : XC_dotbox;
 
 					Cursor cursor = ::XCreateFontCursor(display, x11_cursor_font_id);
