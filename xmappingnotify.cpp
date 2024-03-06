@@ -21,10 +21,13 @@
 #include <X11/xpm.h>
 //-------------------------------------------------------------------------------------------------
 int
-customErrorHandler(Display *display, XErrorEvent *errorEvent)
+customErrorHandler(
+	Display     *display,
+	XErrorEvent *errorEvent
+)
 {
     char errorText[1024] {};
-    XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
+    ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
     fprintf(stderr, "X Error: %s\n", errorText);
 
@@ -32,7 +35,9 @@ customErrorHandler(Display *display, XErrorEvent *errorEvent)
 }
 //-------------------------------------------------------------------------------------------------
 Cursor
-cursorCreate1(Display *display)
+cursorCreate1(
+	Display *display
+)
 {
 	static const unsigned char xlib_spinning_bits[] =
 	{
@@ -78,21 +83,25 @@ cursorCreate1(Display *display)
     bg.blue  = 0xffff;
     bg.flags = 0xf;
 
-	Pixmap cursor = XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
+	Pixmap cursor = ::XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
 		(char *)xlib_spinning_bits, 32, 32, 0xffffffff, 0x0, 1);
-	Pixmap mask = XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
+	Pixmap mask = ::XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
 		(char *)xlib_spinning_mask_bits, 32, 32, 0xffffffff, 0x0, 1);
 
-    Cursor xcursor = XCreatePixmapCursor(display, cursor, mask, &fg, &bg, 2, 2);
+    Cursor xcursor = ::XCreatePixmapCursor(display, cursor, mask, &fg, &bg, 2, 2);
 
-    XFreePixmap(display, mask);
-    XFreePixmap(display, cursor);
+    ::XFreePixmap(display, mask);
+    ::XFreePixmap(display, cursor);
 
     return xcursor;
 }
 //-------------------------------------------------------------------------------------------------
 Cursor
-cursorCreate2(Display *display, Window &root, const char *xpm_filename)
+cursorCreate2(
+	Display    *display,
+	Window     &root,
+	const char *xpmFilePath
+)
 {
 	if (0) {
 		::XSetErrorHandler(customErrorHandler);
@@ -102,7 +111,8 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     Pixmap mask_pixmap {};
 
     // Load XPM file
-    Status status = ::XpmReadFileToPixmap(display, root, xpm_filename, &cursor_pixmap, &mask_pixmap, nullptr);
+    Status status = ::XpmReadFileToPixmap(display, root, xpmFilePath, &cursor_pixmap, &mask_pixmap,
+        nullptr);
     if (status != XpmSuccess) {
         fprintf(stderr, "Error loading XPM file\n");
         return {};
@@ -128,8 +138,8 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     }
 
     // Clean up
-    // XFreePixmap(display, mask_pixmap);
-    // XFreePixmap(display, cursor_pixmap);
+    // ::XFreePixmap(display, mask_pixmap);
+    // ::XFreePixmap(display, cursor_pixmap);
 
 	return cursor;
 }
@@ -138,11 +148,11 @@ void
 cursorLoad(
 	Display           *display,
 	Window            &root,
-	const std::string &cursorFile
+	const std::string &cursorFilePath
 )
 {
 	// Cursor cursor = ::cursorCreate1(display);
-	Cursor cursor = ::cursorCreate2(display, root, cursorFile.c_str());
+	Cursor cursor = ::cursorCreate2(display, root, cursorFilePath.c_str());
 
     // Set the cursor for the root window
     ::XDefineCursor(display, root, cursor);
@@ -183,7 +193,7 @@ int main(int argc, char **argv)
 		::XNextEvent(display, &event);
 
 		if (event.type == xkbEventType) {
-			auto *xkbEvent = (XkbEvent *)&event;
+			auto *xkbEvent = static_cast<XkbEvent *>(&event);
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
 				const int lang = xkbEvent->state.group;
 				std::cout << "En: " << lang << " - start" << std::endl;
@@ -262,9 +272,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	XCloseDisplay(display);
+	::XCloseDisplay(display);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 //-------------------------------------------------------------------------------------------------
 
