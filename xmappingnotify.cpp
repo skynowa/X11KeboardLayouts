@@ -23,17 +23,19 @@
 int
 customErrorHandler(Display *display, XErrorEvent *errorEvent)
 {
-    char errorText[1024];
+    char errorText[1024] {};
     XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
+
     fprintf(stderr, "X Error: %s\n", errorText);
 
     return 0; // Return 0 to indicate that the error has been handled
 }
 //-------------------------------------------------------------------------------------------------
 Cursor
-cursorCreate1(Display * dpy)
+cursorCreate1(Display *display)
 {
-	static const unsigned char xlib_spinning_bits[] = {
+	static const unsigned char xlib_spinning_bits[] =
+	{
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
 		0x0c, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x00, 0x00,
 		0x7c, 0x00, 0x00, 0x00, 0xfc, 0x00, 0x00, 0x00, 0xfc, 0x01, 0x00, 0x00,
@@ -47,7 +49,8 @@ cursorCreate1(Display * dpy)
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 	};
 
-	static const unsigned char xlib_spinning_mask_bits[] = {
+	static const unsigned char xlib_spinning_mask_bits[] =
+	{
 		0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00,
 		0x1e, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00,
 		0xfe, 0x00, 0x00, 0x00, 0xfe, 0x01, 0x00, 0x00, 0xfe, 0x3b, 0x00, 0x00,
@@ -61,31 +64,29 @@ cursorCreate1(Display * dpy)
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 	};
 
-    XColor fg;
+    XColor fg {};
     fg.pixel = 0;
-    fg.red = 0;
+    fg.red   = 0;
     fg.green = 0;
-    fg.blue = 0;
+    fg.blue  = 0;
     fg.flags = 0xf;
 
-    XColor bg;
+    XColor bg {};
     bg.pixel = 0xffffffff;
-    bg.red = 0xffff;
+    bg.red   = 0xffff;
     bg.green = 0xffff;
-    bg.blue = 0xffff;
+    bg.blue  = 0xffff;
     bg.flags = 0xf;
 
-    Pixmap cursor = XCreatePixmapFromBitmapData(dpy, DefaultRootWindow(dpy),
-                                          (char *) xlib_spinning_bits,
-                                          32, 32, 0xffffffff, 0x0, 1);
-    Pixmap mask = XCreatePixmapFromBitmapData(dpy, DefaultRootWindow(dpy),
-                                          (char *) xlib_spinning_mask_bits,
-                                          32, 32, 0xffffffff, 0x0, 1);
+	Pixmap cursor = XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
+		(char *)xlib_spinning_bits, 32, 32, 0xffffffff, 0x0, 1);
+	Pixmap mask = XCreatePixmapFromBitmapData(display, DefaultRootWindow(display),
+		(char *)xlib_spinning_mask_bits, 32, 32, 0xffffffff, 0x0, 1);
 
-    Cursor xcursor = XCreatePixmapCursor(dpy, cursor, mask, &fg, &bg, 2, 2);
+    Cursor xcursor = XCreatePixmapCursor(display, cursor, mask, &fg, &bg, 2, 2);
 
-    XFreePixmap(dpy, mask);
-    XFreePixmap(dpy, cursor);
+    XFreePixmap(display, mask);
+    XFreePixmap(display, cursor);
 
     return xcursor;
 }
@@ -93,7 +94,9 @@ cursorCreate1(Display * dpy)
 Cursor
 cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 {
-    // XSetErrorHandler(customErrorHandler);
+	if (0) {
+		::XSetErrorHandler(customErrorHandler);
+	}
 
     Pixmap cursor_pixmap {};
     Pixmap mask_pixmap {};
@@ -114,7 +117,8 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     XColor fg {};
 	XColor bg {};
 
-    unsigned int x_hot = 2, y_hot = 2;
+    unsigned int x_hot = 2;
+    unsigned int y_hot = 2;
 
     // Create the cursor
     Cursor cursor = ::XCreatePixmapCursor(display, cursor_pixmap, mask_pixmap, &fg, &bg, x_hot, y_hot);
