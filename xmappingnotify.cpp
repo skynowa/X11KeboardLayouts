@@ -3,6 +3,7 @@
  * \brief
  *
  * \see   https://stackoverflow.com/questions/35569562/how-to-catch-keyboard-layout-change-event-and-get-current-new-keyboard-layout-on
+ * https://www-h.eng.cam.ac.uk/help/tpl/graphics/X/X11R5/node20.html
  *
  * sudo apt-get install libxpm-dev
  */
@@ -92,11 +93,10 @@ cursorCreate1(Display * dpy)
 Cursor
 cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 {
-    // Set up custom error handler
     // XSetErrorHandler(customErrorHandler);
 
-    Pixmap cursor_pixmap = None;
-    Pixmap mask_pixmap = None;
+    Pixmap cursor_pixmap {};
+    Pixmap mask_pixmap {};
 
     // Load XPM file
     Status status = ::XpmReadFileToPixmap(display, root, xpm_filename, &cursor_pixmap, &mask_pixmap, nullptr);
@@ -106,24 +106,13 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
     }
 
     if (cursor_pixmap == None || mask_pixmap == None) {
-        fprintf(stderr, "Error loading XPM file\n");
+        fprintf(stderr, "Error loading pixmap\n");
         return {};
     }
 
     // Define colors and hot spot coordinates
     XColor fg {};
-    // fg.pixel = 0;
-    // fg.red   = 0;
-    // fg.green = 0;
-    // fg.blue  = 0;
-    // fg.flags = DoRed | DoGreen | DoBlue;
-
 	XColor bg {};
-    // bg.pixel = 0xffffffff;
-    // bg.red   = 0xffff;
-    // bg.green = 0xffff;
-    // bg.blue  = 0xffff;
-    // bg.flags = DoRed | DoGreen | DoBlue;
 
     unsigned int x_hot = 2, y_hot = 2;
 
@@ -143,8 +132,8 @@ cursorCreate2(Display *display, Window &root, const char *xpm_filename)
 //-------------------------------------------------------------------------------------------------
 void
 cursorLoad(
-	Display *display,
-	Window  &root,
+	Display           *display,
+	Window            &root,
 	const std::string &cursorFile
 )
 {
