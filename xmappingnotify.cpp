@@ -29,6 +29,9 @@ customErrorHandler(
 	XErrorEvent *errorEvent
 )
 {
+	STD_TEST_PTR(display);
+	STD_TEST_PTR(errorEvent);
+
     char errorText[1024] {};
     ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
@@ -53,6 +56,10 @@ cursorCreate1(
 	Display *display
 )
 {
+	STD_TRACE_FUNC
+
+	STD_TEST_PTR(display);
+
 	static const unsigned char xlib_spinning_bits[] =
 	{
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
@@ -119,6 +126,10 @@ cursorCreate2(
 {
 	STD_TRACE_FUNC
 
+	STD_TEST_PTR(display);
+	STD_TEST(root > 0);
+	STD_TEST_PTR(xpmFilePath);
+
 	std::cout << STD_TRACE_VAR(display) << std::endl;
 	std::cout << STD_TRACE_VAR(root) << std::endl;
 	std::cout << STD_TRACE_VAR(xpmFilePath) << std::endl;
@@ -127,13 +138,16 @@ cursorCreate2(
     Pixmap mask_pixmap {};
 
     // Load XPM file
+    errno = 0;
+
     Status status = ::XpmReadFileToPixmap(display, root, xpmFilePath, &cursor_pixmap, &mask_pixmap,
         nullptr);
+
+    STD_TRACE_POINT
+
     STD_TEST(status == XpmSuccess);
     STD_TEST(cursor_pixmap != None);
     STD_TEST(mask_pixmap != None);
-
-    STD_TRACE_POINT
 
     // Define colors and hot spot coordinates
     XColor fg {};
@@ -172,8 +186,8 @@ cursorLoad(
 
 	STD_TRACE_POINT
 
-	// Cursor cursor = ::cursorCreate1(display);
-	Cursor cursor = ::cursorCreate2(display, root, cursorFilePath.c_str());
+	Cursor cursor = ::cursorCreate1(display);
+	/// Cursor cursor = ::cursorCreate2(display, root, cursorFilePath.c_str());
 	STD_TEST(cursor != None);
 
 	STD_TRACE_POINT
@@ -181,8 +195,6 @@ cursorLoad(
     // Set the cursor for the root window
     iRv = ::XDefineCursor(display, root, cursor);
     STD_TEST(iRv != None);
-
-    STD_TRACE_POINT
 
     iRv = ::XFlush(display);
     STD_TEST(iRv != None);
@@ -292,7 +304,6 @@ int main(int argc, char **argv)
 				if (lang == 0) {
 					::cursorLoad(display, rootWin, cursor_en);
 				} else {
-					/// cursor = ::cursorLoad(display, rootWin);
 					::cursorLoad(display, rootWin, cursor_ru);
 				}
 
