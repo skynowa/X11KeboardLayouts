@@ -32,7 +32,18 @@ customErrorHandler(
     char errorText[1024] {};
     ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
-    fprintf(stderr, "[Error] %d - %s\n", errorEvent->error_code, errorText);
+    std::cerr
+        << "\n"
+        << "---------------------- ERROR ---------------------" << "\n"
+        << " Type:         " << errorEvent->type                << "\n"
+        << " Display:      " << errorEvent->display             << "\n"
+        << " Resource ID:  " << errorEvent->resourceid          << "\n"
+        << " Serial:       " << errorEvent->serial              << "\n"
+        << " Error code:   " << errorEvent->error_code          << "\n"
+        << " Request code: " << errorEvent->request_code        << "\n"
+        << " Minor code:   " << errorEvent->minor_code          << "\n"
+        << " Msg:          " << errorText                       << "\n"
+        << "--------------------------------------------------" << std::endl;
 
     return 0; // Return 0 to indicate that the error has been handled
 }
