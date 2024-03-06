@@ -144,6 +144,12 @@ cursorCreate2(
 	return cursor;
 }
 //-------------------------------------------------------------------------------------------------
+/**
+ * Change cursor
+ *
+ * https://stackoverflow.com/questions/73833171/how-to-get-the-active-window-using-x11-xlib-c-api
+ * https://github.com/UltimateHackingKeyboard/current-window-linux/blob/master/get-current-window.c
+ */
 void
 cursorLoad(
 	Display           *display,
@@ -160,6 +166,57 @@ cursorLoad(
 
     // Clean up
     /// ::XFreeCursor(display, cursor);
+}
+//-------------------------------------------------------------------------------------------------
+Window
+activeWindow(
+	Display *display,
+	Window  &rootWin
+)
+{
+	// Get the atom of the property
+	const Atom property = ::XInternAtom(display, "_NET_ACTIVE_WINDOW", False);
+	const Bool isDelete {False};
+	// https://docs.rs/x11/0.0.36/x11/xlib/constant.XA_WINDOW.html
+	const Atom XA_WINDOW {33};
+
+	// Return values
+	Atom           type_return {};
+	int            format_return {};
+	unsigned long  nitems_return {};
+	unsigned long  bytes_left {};
+	unsigned char *data {};
+
+	int iRv = ::XGetWindowProperty(
+		display,
+		rootWin,
+		property,
+		0,              // no offset
+		1,              // one Window
+		isDelete,
+		XA_WINDOW,
+		&type_return,   // should be XA_WINDOW
+		&format_return, // should be 32
+		&nitems_return, // should be 1 (zero if there is no such window)
+		&bytes_left,    // should be 0 (i'm not sure but should be atomic read)
+		&data           // should be non-null
+	);
+
+	if (iRv != Success) {
+		std::cout << "iRv: " << iRv << std::endl;
+		return {};
+	}
+
+	if (nitems_return != 1) {
+		std::cout << "nitems_return: " << nitems_return << std::endl;
+		return {};
+	}
+
+	const Window activeWin = ((Window *)data)[0];
+
+	::XFree(data);
+
+	return activeWin;
 }
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -188,12 +245,12 @@ int main(int argc, char **argv)
 
 	int i {};
 
-	while (1) {
+	while (true) {
 		XEvent event {};
 		::XNextEvent(display, &event);
 
 		if (event.type == xkbEventType) {
-			auto *xkbEvent = static_cast<XkbEvent *>(&event);
+			auto *xkbEvent = (XkbEvent *)&event;
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
 				const int lang = xkbEvent->state.group;
 				std::cout << "En: " << lang << " - start" << std::endl;
@@ -207,52 +264,10 @@ int main(int argc, char **argv)
 
 				std::cout << "Ru: " << lang << " - end" << std::endl;
 
+				///
 				continue;
 
-			   /**
-				* Change cursor
-				*
-				* https://stackoverflow.com/questions/73833171/how-to-get-the-active-window-using-x11-xlib-c-api
-				* https://github.com/UltimateHackingKeyboard/current-window-linux/blob/master/get-current-window.c
-				*/
-
-				// Get the atom of the property
-				Atom       property = ::XInternAtom(display, "_NET_ACTIVE_WINDOW", False);
-				const Bool isDelete {False};
-				// https://docs.rs/x11/0.0.36/x11/xlib/constant.XA_WINDOW.html
-				const Atom XA_WINDOW {33};
-
-				// Return values
-				Atom           type_return {};
-				int            format_return {};
-				unsigned long  nitems_return {};
-				unsigned long  bytes_left {};
-				unsigned char *data {};
-
-				int iRv = ::XGetWindowProperty(
-					display,
-					rootWin,
-					property,
-					0,              // no offset
-					1,              // one Window
-					isDelete,
-					XA_WINDOW,
-					&type_return,   // should be XA_WINDOW
-					&format_return, // should be 32
-					&nitems_return, // should be 1 (zero if there is no such window)
-					&bytes_left,    // should be 0 (i'm not sure but should be atomic read)
-					&data           // should be non-null
-				);
-
-				if (iRv != Success) {
-					std::cout << "iRv: " << iRv << std::endl;
-				}
-
-				if (nitems_return != 1) {
-					std::cout << "nitems_return: " << nitems_return << std::endl;
-				}
-
-				Window activeWin = ((Window *) data)[0];
+				Window activeWin = ::activeWindow(display, rootWin);
 
 				if (0) {
 					++ i;
@@ -264,7 +279,6 @@ int main(int argc, char **argv)
 					::XDefineCursor(display, activeWin, cursor);
 
 					::XFreeCursor(display, cursor);
-					::XFree(data);
 				}
 			}
 
