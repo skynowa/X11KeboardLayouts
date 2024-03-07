@@ -32,6 +32,6 @@ Widget::alignToCursor()
 {
     const QPoint pos = QCursor::pos();
 
-    setGeometry(pos.x() - width() - 2, pos.y() - height() - 2, width(), height());
+    setGeometry(pos.x() + width() - 2, pos.y() - height() - 2, width(), height());
 }
 //-------------------------------------------------------------------------------------------------
