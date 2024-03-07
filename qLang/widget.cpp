@@ -22,7 +22,7 @@ void
 Widget::setPixmap()
 {
     // https://flagicons.lipis.dev
-    QPixmap pixmap("/home/skynowa/Projects/qLang/Data/" + _langCode + ".svg");
+    QPixmap pixmap("/home/skynowa/Projects/XMmappingNotify/qLang/Data/" + _langCode + ".svg");
 
     ui.label->setPixmap(pixmap);
 }

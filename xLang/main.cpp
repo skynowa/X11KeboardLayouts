@@ -467,7 +467,7 @@ int main(int argc, char **argv)
 
 				/// pictureShow1(display, rootWin);
 
-				const std::string cmd = "/home/skynowa/Projects/build-qLang-Desktop-Debug/qLang " +  params;
+				const std::string cmd = "/home/skynowa/Projects/XMmappingNotify/build-qLang-Desktop-Debug/qLang " +  params;
 
 				std::system(cmd.c_str());
 
