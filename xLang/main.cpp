@@ -75,9 +75,7 @@ int main(int argc, char **argv)
 
 	::XSync(display, False);
 
-	int i {};
-
-	while (true) {
+	for ( ;; ) {
 		std::cout << std::endl;
 		std::cout << "XNextEvent - watch..." << std::endl;
 
