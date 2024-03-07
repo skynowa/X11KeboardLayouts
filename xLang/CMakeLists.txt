@@ -8,7 +8,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project("xmappingnotify" CXX)
+project("xLang" CXX)
 #--------------------------------------------------------------------------------------------------
 # options
 set(PROJECT_TYPE                CXX)
@@ -24,7 +24,7 @@ find_package(X11 REQUIRED)
 
 
 # Add the source file
-add_executable(${PROJECT_NAME} xmappingnotify.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
 

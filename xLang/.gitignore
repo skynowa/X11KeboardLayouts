@@ -2,8 +2,7 @@
 
 # Bin
 *.o
-xkblayout-state
-xmappingnotify
+xLang
 
 # IDE
 .project

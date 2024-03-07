@@ -1,5 +1,5 @@
 /**
- * \file  xmappingnotify.c
+ * \file  main.cpp
  * \brief
  *
  * \see
