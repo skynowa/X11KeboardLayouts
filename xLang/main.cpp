@@ -87,23 +87,16 @@ int main(int argc, char **argv)
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
-				const int lang = xkbEvent->state.group;
-				std::cout << "En: " << lang << " - start" << std::endl;
+				const int lang_id           = xkbEvent->state.group;
+				const std::string lang_code = (lang_id == 0) ? "en" : "ru";
 
-				std::string params;
-				if (lang == 0) {
-					params = "en";
-				} else {
-					params = "ru";
-				}
+				std::cout << STD_TRACE_VAR(lang_id) << ", " <<  STD_TRACE_VAR(lang_code)  << std::endl;
 
 				const std::string cmd = "/home/skynowa/Projects/XMmappingNotify/"
-					"build-qLang-Desktop-Debug/qLang " +  params;
+					"build-qLang-Desktop-Debug/qLang " +  lang_code;
 
 				int iRv = std::system(cmd.c_str());
 				STD_UNUSED(iRv);
-
-				std::cout << "Ru: " << lang << " - end" << std::endl;
 			}
 		}
 	}
