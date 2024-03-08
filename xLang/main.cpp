@@ -67,8 +67,6 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	::XKeysymToKeycode(display, XK_F1);
-
 	int xkbEventType {};
 	::XkbQueryExtension(display, 0, &xkbEventType, 0, 0, 0);
 
