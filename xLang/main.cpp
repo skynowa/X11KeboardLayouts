@@ -86,9 +86,10 @@ int main(int argc, char **argv)
 
 		std::cout << appTitle << "XNextEvent - fire" << std::endl;
 
+		std::cout << appTitle << STD_TRACE_VAR(event.type) << std::endl;
+
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
-
 			std::cout << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type) << std::endl;
 
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
