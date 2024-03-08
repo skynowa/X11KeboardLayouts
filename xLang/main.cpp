@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		::XSetErrorHandler(customErrorHandler);
 	}
 
-	Display *display = ::XOpenDisplay(NULL);
+	Display *display = ::XOpenDisplay(nullptr);
 	if (display == nullptr) {
 		std::cerr << appTitle << "cannot open display" << std::endl;
 		return EXIT_FAILURE;
@@ -72,6 +72,9 @@ int main(int argc, char **argv)
 
 	::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
 		XkbGroupStateMask);
+
+    Window rootWindow = DefaultRootWindow(display);
+    XSelectInput(display, rootWindow, ButtonPressMask);
 
 	::XSync(display, False);
 
