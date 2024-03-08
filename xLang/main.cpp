@@ -25,7 +25,7 @@
 #include <StdStream/StdStream.h>
 #include <StdTest/StdTest.h>
 //-------------------------------------------------------------------------------------------------
-const std::string appTitle = "[xLang]";
+const std::string appTitle = "[xLang] ";
 //-------------------------------------------------------------------------------------------------
 int
 customErrorHandler(
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
 	Display *display = ::XOpenDisplay(NULL);
 	if (display == nullptr) {
-		std::cerr << appTitle << " cannot open display" << std::endl;
+		std::cerr << appTitle << "cannot open display" << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -79,20 +79,23 @@ int main(int argc, char **argv)
 
 	for ( ;; ) {
 		std::cout << std::endl;
-		std::cout << appTitle << " XNextEvent - watch..." << std::endl;
+		std::cout << appTitle << "XNextEvent - watch..." << std::endl;
 
 		XEvent event {};
 		::XNextEvent(display, &event);
 
-		std::cout << appTitle << " XNextEvent - fire" << std::endl;
+		std::cout << appTitle << "XNextEvent - fire" << std::endl;
 
 		if (event.type == xkbEventType) {
 			auto *xkbEvent = (XkbEvent *)&event;
+
+			std::cout << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type) << std::endl;
+
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
 				const int lang_id           = xkbEvent->state.group;
 				const std::string lang_code = (lang_id == 0) ? "en" : "ru";
 
-				std::cout << appTitle << " " << STD_TRACE_VAR(lang_id) << ", " <<  STD_TRACE_VAR(lang_code)  << std::endl;
+				// std::cout << appTitle << STD_TRACE_VAR(lang_id) << ", " <<  STD_TRACE_VAR(lang_code)  << std::endl;
 
 				const std::string cmd = "/home/skynowa/Projects/XMmappingNotify/"
 					"build-qLang-Desktop-Debug/qLang " +  lang_code;
