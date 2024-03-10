@@ -66,6 +66,14 @@ int main(int argc, char **argv)
 		::XSetErrorHandler(customErrorHandler);
 	}
 
+   /**
+	* Note: We might never get a MappingNotify event if the
+	* modifier and keymap information was never cached in Xlib.
+	* The next line makes sure that this happens initially.
+	*/
+    ::XKeysymToKeycode(display, XK_F1);
+
+
 	int xkbEventType {};
 	::XkbQueryExtension(display, 0, &xkbEventType, 0, 0, 0);
 
