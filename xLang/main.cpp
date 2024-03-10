@@ -106,8 +106,8 @@ int main(int argc, char **argv)
 
 				// std::cout << appTitle << STD_TRACE_VAR(lang_id) << ", " <<  STD_TRACE_VAR(lang_code)  << std::endl;
 
-				const std::string cmd = "/home/skynowa/Projects/X11KeboardLayouts/"
-					"build-qLang-Desktop-Debug/qLang " +  lang_code;
+				const std::string cmd = "/home/skynowa/Projects/X11KeboardLayouts/qLang/qLang " +
+					lang_code;
 
 				int iRv = std::system(cmd.c_str());
 				STD_UNUSED(iRv);
