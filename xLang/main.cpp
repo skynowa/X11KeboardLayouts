@@ -57,14 +57,14 @@ customErrorHandler(
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-	if (1) {
-		::XSetErrorHandler(customErrorHandler);
-	}
-
 	Display *display = ::XOpenDisplay(nullptr);
 	if (display == nullptr) {
 		std::cerr << appTitle << "cannot open display" << std::endl;
 		return EXIT_FAILURE;
+	}
+
+	if (1) {
+		::XSetErrorHandler(customErrorHandler);
 	}
 
 	int xkbEventType {};
