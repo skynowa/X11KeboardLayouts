@@ -112,14 +112,3 @@ int main(int argc, char **argv)
 	return EXIT_SUCCESS;
 }
 //-------------------------------------------------------------------------------------------------
-
-
-#if 0
-
-// https://github.com/Cougar/pwm/blob/master/cursor.c
-void set_cursor(Window win, int cursor)
-{
-	XDefineCursor(wglobal.dpy, win, cursors[cursor]);
-}
-
-#endif
