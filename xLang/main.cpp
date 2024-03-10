@@ -6,8 +6,7 @@
  * - https://stackoverflow.com/questions/35569562/how-to-catch-keyboard-layout-change-event-and-get-current-new-keyboard-layout-on
  * - https://www-h.eng.cam.ac.uk/help/tpl/graphics/X/X11R5/node20.html
  * - https://github.com/skynowa/find-cursor/blob/master/find-cursor.c
- *
- * sudo apt-get install libxpm-dev
+ * - https://github.com/Cougar/pwm/blob/master/cursor.c
  */
 
 
