@@ -35,9 +35,9 @@ find_package(Qt6)
 #--------------------------------------------------------------------------------------------------
 set(PROJECT_SOURCES
     main.cpp
-    widget.cpp
-    widget.h
-    widget.ui)
+    Widget.cpp
+    Widget.h
+    Widget.ui)
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES})

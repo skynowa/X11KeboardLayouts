@@ -3,7 +3,7 @@
  * \brief
  */
 
-#include "widget.h"
+#include "Widget.h"
 
 #include <QApplication>
 #include <QTimer>

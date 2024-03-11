@@ -4,7 +4,7 @@
  */
 
 
-#include "widget.h"
+#include "Widget.h"
 //-------------------------------------------------------------------------------------------------
 Widget::Widget(
     const QString &a_langCode
