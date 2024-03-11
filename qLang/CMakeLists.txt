@@ -32,6 +32,7 @@ else()
 endif()
 #--------------------------------------------------------------------------------------------------
 find_package(Qt6)
+find_package(X11 REQUIRED)
 #--------------------------------------------------------------------------------------------------
 set(PROJECT_SOURCES
     main.cpp
@@ -43,8 +44,12 @@ set(PROJECT_SOURCES
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES})
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${X11_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets)
+    Qt${QT_VERSION_MAJOR}::Widgets
+    ${X11_LIBRARIES})
 
 qt_finalize_executable(${PROJECT_NAME})
 #--------------------------------------------------------------------------------------------------

@@ -20,7 +20,6 @@ set(CMAKE_REQUIRED_QUIET        ON)
 #--------------------------------------------------------------------------------------------------
 # Find X11 package
 find_package(X11 REQUIRED)
-# find_package(Xcursor REQUIRED)
 
 
 # Add the source file
@@ -32,5 +31,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -O2)
 
 # Link necessary libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES} Xcursor Xpm png)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 #--------------------------------------------------------------------------------------------------
