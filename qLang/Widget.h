@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "./ui_widget.h"
+#include "./ui_Widget.h"
 
 #include <QWidget>
 #include <QCursor>
