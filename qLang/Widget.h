@@ -7,9 +7,7 @@
 #pragma once
 
 #include "./ui_Widget.h"
-
-#include <QWidget>
-#include <QCursor>
+#include "Config.h"
 //-------------------------------------------------------------------------------------------------
 class Widget :
     public QWidget

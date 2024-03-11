@@ -3,10 +3,8 @@
  * \brief
  */
 
-#include "Widget.h"
 
-#include <QApplication>
-#include <QTimer>
+#include "Widget.h"
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
