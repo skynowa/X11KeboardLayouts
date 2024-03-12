@@ -14,7 +14,7 @@ class Widget :
 {
 public:
              Widget() = delete;
-    explicit Widget(const QString &langCode);
+    explicit Widget(const int langId);
             ~Widget() = default;
 
 private:
@@ -24,7 +24,8 @@ private:
 
     const QString _langCode;
 
-    void setPixmap();
-    void alignToCursor();
+    QString _langIdToCode(const int langId) const;
+    void    _setPixmap();
+    void    _alignToCursor();
 };
 //-------------------------------------------------------------------------------------------------

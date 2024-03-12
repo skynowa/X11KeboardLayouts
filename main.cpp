@@ -77,10 +77,7 @@ int main(int argc, char *argv[])
             // qDebug() << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type);
 
             if (xkbEvent->any.xkb_type == XkbStateNotify) {
-                const int     langId   = xkbEvent->state.group;
-                const QString langCode = (langId == 0) ? "en" : "ru";
-
-                qDebug() << appTitle << "Lang:" << langCode << "(" << langId << ")";
+                const int langId = xkbEvent->state.group;
 
                 // Constants
                 const int intervalMs = 700;
@@ -88,7 +85,7 @@ int main(int argc, char *argv[])
                 // App
                 QApplication app(argc, argv);
 
-                Widget widget(langCode);
+                Widget widget(langId);
                 widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
                     Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
                 widget.show();

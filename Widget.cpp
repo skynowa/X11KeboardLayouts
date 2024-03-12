@@ -7,19 +7,38 @@
 #include "Widget.h"
 //-------------------------------------------------------------------------------------------------
 Widget::Widget(
-    const QString &a_langCode
+    const int a_langId
 ) :
     QWidget  (nullptr),
-    _langCode(a_langCode)
+    _langCode( _langIdToCode(a_langId) )
 {
     ui.setupUi(this);
 
-    setPixmap();
-    alignToCursor();
+    _setPixmap();
+    _alignToCursor();
+}
+//-------------------------------------------------------------------------------------------------
+QString
+Widget::_langIdToCode(
+    const int a_langId
+) const
+{
+    static const QMap<int, QString> codes
+    {
+        {0, "en"},
+        {1, "ru"}
+    };
+
+    auto it = codes.find(a_langId);
+    if (it == codes.cend()) {
+        return {};
+    }
+
+    return it.value();
 }
 //-------------------------------------------------------------------------------------------------
 void
-Widget::setPixmap()
+Widget::_setPixmap()
 {
     // https://flagicons.lipis.dev
     const QString iconPath = ICONS_DIR "/" + _langCode + ".svg";
@@ -34,7 +53,7 @@ Widget::setPixmap()
 }
 //-------------------------------------------------------------------------------------------------
 void
-Widget::alignToCursor()
+Widget::_alignToCursor()
 {
     const QPoint pos = QCursor::pos();
 
