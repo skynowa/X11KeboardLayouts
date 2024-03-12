@@ -22,7 +22,13 @@ void
 Widget::setPixmap()
 {
     // https://flagicons.lipis.dev
-    QPixmap pixmap(ICONS_DIR "/" + _langCode + ".svg");
+    const QString iconPath = ICONS_DIR "/" + _langCode + ".svg";
+
+    QFileInfo checkFile(iconPath);
+    STD_TEST(checkFile.exists());
+    STD_TEST(checkFile.isFile());
+
+    QPixmap pixmap(iconPath);
 
     ui.label->setPixmap(pixmap);
 }

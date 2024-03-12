@@ -11,6 +11,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QCursor>
+#include <QFileInfo>
 
 #include <X11/XKBlib.h>
 #include <X11/Xutil.h>
