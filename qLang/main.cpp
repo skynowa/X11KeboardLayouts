@@ -38,8 +38,6 @@ customErrorHandler(
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-
     if (1) {
         Display *display = ::XOpenDisplay(nullptr);
         if (display == nullptr) {
@@ -98,18 +96,23 @@ int main(int argc, char *argv[])
                     STD_UNUSED(iRv);
                 #else
                     // Constants
-                    const QString appTitle = "[qLang]";
-                    const int     interval = 800;
+                    const std::string appTitle = "[qLang] ";
+                    const int         interval = 800;
 
                     // App
+                    QApplication app(argc, argv);
+
                     Widget widget( QString::fromStdString(lang_code) );
                     widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint |
                         Qt::WindowDoesNotAcceptFocus);
                     widget.show();
 
-                    QTimer::singleShot(interval, &widget, &Widget::close);
+                    // QTimer::singleShot(interval, &widget, &Widget::close);
+                    QTimer::singleShot(interval, &app, &QApplication::quit);
 
-                    /// app.exec();
+                    std::cout << appTitle << "app.exec() - Start" << std::endl;
+                    app.exec();
+                    std::cout << appTitle << "app.exec() - Finish" << std::endl;
                 #endif
                 }
             }
