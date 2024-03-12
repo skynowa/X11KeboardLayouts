@@ -13,8 +13,9 @@ class Widget :
     public QWidget
 {
 public:
+             Widget() = delete;
     explicit Widget(const QString &langCode);
-    ~Widget() = default;
+            ~Widget() = default;
 
 private:
     Q_OBJECT
