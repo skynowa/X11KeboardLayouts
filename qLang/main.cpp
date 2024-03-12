@@ -6,31 +6,102 @@
 
 #include "Widget.h"
 //-------------------------------------------------------------------------------------------------
+const QString appTitle("[qLang]");
+//-------------------------------------------------------------------------------------------------
+int
+customErrorHandler(
+    Display     *display,
+    XErrorEvent *errorEvent
+)
+{
+    STD_TEST_PTR(display);
+    STD_TEST_PTR(errorEvent);
+
+    char errorText[1024] {};
+    ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
+
+    qDebug()
+        << "\n"
+        << "--------------------" << appTitle << "-------------------" << "\n"
+        << " Type:        " << errorEvent->type                << "\n"
+        << " Display:     " << errorEvent->display             << "\n"
+        << " Resource ID: " << errorEvent->resourceid          << "\n"
+        << " Serial:      " << errorEvent->serial              << "\n"
+        << " Error code:  " << errorEvent->error_code          << "\n"
+        << " Request code:" << errorEvent->request_code        << "\n"
+        << " Minor code:  " << errorEvent->minor_code          << "\n"
+        << " Msg:         " << errorText                       << "\n"
+        << "--------------------------------------------------";
+
+    // Return 0 - indicate that the error has been handled
+    return 0;
+}
+//-------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    // Constants
-    const QString appTitle = "[qLang]";
-    const int     interval = 800;
+    Display *display = ::XOpenDisplay(nullptr);
+    STD_TEST_PTR(display);
 
-    // App
-    QApplication app(argc, argv);
-
-    const QStringList arguments = QCoreApplication::arguments();
-    if (arguments.size() <= 1) {
-        qDebug() << appTitle << "Bad arguments: " << arguments;
-        return EXIT_FAILURE;
+    if (1) {
+        ::XSetErrorHandler(::customErrorHandler);
     }
 
-    const QString paramLangCode = arguments.at(1);
-    qDebug() << appTitle << "paramLangCode:" << paramLangCode;
+   /**
+    * Note: We might never get a MappingNotify event if the
+    * modifier and keymap information was never cached in Xlib.
+    * The next line makes sure that this happens initially.
+    */
+    ::XKeysymToKeycode(display, XK_F1);
 
-    Widget widget(paramLangCode);
-    widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint |
-        Qt::WindowDoesNotAcceptFocus);
-    widget.show();
+    int xkbEventType {};
+    ::XkbQueryExtension(display, 0, &xkbEventType, 0, 0, 0);
 
-    QTimer::singleShot(interval, &app, &QCoreApplication::quit);
+    ::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
+        XkbGroupStateMask);
 
-    return app.exec();
+    Window rootWindow = DefaultRootWindow(display);
+    ::XSelectInput(display, rootWindow, ButtonPressMask);
+    ::XSync(display, False);
+
+    for ( ;; ) {
+        qDebug() << "";
+        qDebug() << appTitle << "XNextEvent - watch...";
+
+        XEvent event {};
+        ::XNextEvent(display, &event);
+
+        qDebug() << appTitle << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
+
+        if (event.type == xkbEventType) {
+            auto *xkbEvent = (XkbEvent *)&event;
+            // qDebug() << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type);
+
+            if (xkbEvent->any.xkb_type == XkbStateNotify) {
+                const int     langId   = xkbEvent->state.group;
+                const QString langCode = (langId == 0) ? "en" : "ru";
+
+                qDebug() << appTitle << "Lang:" << langCode << "(" << langId << ")";
+
+                // Constants
+                const int interval = 700;
+
+                // App
+                QApplication app(argc, argv);
+
+                Widget widget(langCode);
+                widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint |
+                    Qt::WindowDoesNotAcceptFocus);
+                widget.show();
+
+                QTimer::singleShot(interval, &app, &QApplication::quit);
+
+                app.exec();
+            }
+        }
+    }
+
+    ::XCloseDisplay(display);
+
+    return EXIT_SUCCESS;
 }
 //-------------------------------------------------------------------------------------------------

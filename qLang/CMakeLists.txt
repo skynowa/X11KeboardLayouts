@@ -6,14 +6,19 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(qLang VERSION 0.1 LANGUAGES CXX)
+project(qLang CXX)
+#--------------------------------------------------------------------------------------------------
+# options
+set(PROJECT_TYPE                CXX)
+set(CMAKE_CXX_STANDARD          20)
+set(CMAKE_COLOR_MAKEFILE        ON)
+set(CMAKE_VERBOSE_MAKEFILE      OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_REQUIRED_QUIET        ON)
 #--------------------------------------------------------------------------------------------------
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(DIR_HOME $ENV{HOME})
 
@@ -31,7 +36,8 @@ else()
         "${CMAKE_SOURCE_DIR}")
 endif()
 #--------------------------------------------------------------------------------------------------
-find_package(Qt6)
+find_package(Qt6 REQUIRED)
+find_package(X11 REQUIRED)
 #--------------------------------------------------------------------------------------------------
 set(PROJECT_SOURCES
     main.cpp
@@ -43,8 +49,12 @@ set(PROJECT_SOURCES
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES})
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${X11_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets)
+    Qt${QT_VERSION_MAJOR}::Widgets
+    ${X11_LIBRARIES})
 
 qt_finalize_executable(${PROJECT_NAME})
 #--------------------------------------------------------------------------------------------------
