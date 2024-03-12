@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 		XkbGroupStateMask);
 
     Window rootWindow = DefaultRootWindow(display);
-    XSelectInput(display, rootWindow, ButtonPressMask);
+    ::XSelectInput(display, rootWindow, ButtonPressMask);
 
 	::XSync(display, False);
 
@@ -92,12 +92,10 @@ int main(int argc, char **argv)
 		XEvent event {};
 		::XNextEvent(display, &event);
 
-		std::cout << appTitle << "XNextEvent - fire" << std::endl;
-
-		std::cout << appTitle << STD_TRACE_VAR(event.type) << std::endl;
+		std::cout << appTitle << "XNextEvent - fire. " << STD_TRACE_VAR(event.type) << std::endl;
 
 		if (event.type == xkbEventType) {
-			auto *xkbEvent = (XkbEvent *)&event;
+			const auto *xkbEvent = (XkbEvent *)&event;
 			std::cout << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type) << std::endl;
 
 			if (xkbEvent->any.xkb_type == XkbStateNotify) {
