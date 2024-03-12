@@ -83,17 +83,17 @@ int main(int argc, char *argv[])
                 qDebug() << appTitle << "Lang:" << langCode << "(" << langId << ")";
 
                 // Constants
-                const int interval = 700;
+                const int intervalMs = 700;
 
                 // App
                 QApplication app(argc, argv);
 
                 Widget widget(langCode);
-                widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint |
-                    Qt::WindowDoesNotAcceptFocus);
+                widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
+                    Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
                 widget.show();
 
-                QTimer::singleShot(interval, &app, &QApplication::quit);
+                QTimer::singleShot(intervalMs, &app, &QApplication::quit);
 
                 app.exec();
             }
