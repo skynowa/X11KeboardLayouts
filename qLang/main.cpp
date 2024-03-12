@@ -22,7 +22,7 @@ customErrorHandler(
 
     qDebug()
         << "\n"
-        << "---------------------- qLang ---------------------" << "\n"
+        << "--------------------" << appTitle << "-------------------" << "\n"
         << " Type:         " << errorEvent->type                << "\n"
         << " Display:      " << errorEvent->display             << "\n"
         << " Resource ID:  " << errorEvent->resourceid          << "\n"
