@@ -18,5 +18,5 @@
 #include <StdStream/StdStream.h>
 #include <StdTest/StdTest.h>
 //-------------------------------------------------------------------------------------------------
-#define ICONS_DIR "/home/skynowa/Projects/X11KeboardLayouts/qLang/Data"
+#define ICONS_DIR "/home/skynowa/Projects/X11KeboardLayouts/Data"
 //-------------------------------------------------------------------------------------------------
