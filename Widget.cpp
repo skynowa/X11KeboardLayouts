@@ -26,11 +26,13 @@ Widget::_langIdToCode(
     static const QMap<int, QString> codes
     {
         {0, "en"},
-        {1, "ru"}
+        {1, "ru"},
+        {2, "ua"}
     };
 
     auto it = codes.find(a_langId);
     if (it == codes.cend()) {
+        qDebug() << STD_TRACE_VAR(a_langId);
         return {};
     }
 
