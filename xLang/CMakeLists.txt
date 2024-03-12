@@ -1,8 +1,6 @@
 #--------------------------------------------------------------------------------------------------
 # \file  [PROJECT_NAME].cmake
 # \brief
-#
-# sudo apt-get install libxcursor-dev
 #--------------------------------------------------------------------------------------------------
 
 
@@ -21,15 +19,14 @@ set(CMAKE_REQUIRED_QUIET        ON)
 # Find X11 package
 find_package(X11 REQUIRED)
 
-
 # Add the source file
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+	main.cpp)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
-
-# Set compiler flags
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -O2)
+target_include_directories(${PROJECT_NAME} PRIVATE
+	${X11_INCLUDE_DIR})
 
 # Link necessary libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+	${X11_LIBRARIES})
 #--------------------------------------------------------------------------------------------------
