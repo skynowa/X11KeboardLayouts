@@ -23,14 +23,14 @@ customErrorHandler(
     qDebug()
         << "\n"
         << "--------------------" << appTitle << "-------------------" << "\n"
-        << " Type:         " << errorEvent->type                << "\n"
-        << " Display:      " << errorEvent->display             << "\n"
-        << " Resource ID:  " << errorEvent->resourceid          << "\n"
-        << " Serial:       " << errorEvent->serial              << "\n"
-        << " Error code:   " << errorEvent->error_code          << "\n"
-        << " Request code: " << errorEvent->request_code        << "\n"
-        << " Minor code:   " << errorEvent->minor_code          << "\n"
-        << " Msg:          " << errorText                       << "\n"
+        << " Type:        " << errorEvent->type                << "\n"
+        << " Display:     " << errorEvent->display             << "\n"
+        << " Resource ID: " << errorEvent->resourceid          << "\n"
+        << " Serial:      " << errorEvent->serial              << "\n"
+        << " Error code:  " << errorEvent->error_code          << "\n"
+        << " Request code:" << errorEvent->request_code        << "\n"
+        << " Minor code:  " << errorEvent->minor_code          << "\n"
+        << " Msg:         " << errorText                       << "\n"
         << "--------------------------------------------------";
 
     // Return 0 - indicate that the error has been handled
@@ -80,10 +80,10 @@ int main(int argc, char *argv[])
                 const int     langId   = xkbEvent->state.group;
                 const QString langCode = (langId == 0) ? "en" : "ru";
 
-                qDebug() << appTitle << STD_TRACE_VAR(langId) << "," <<  STD_TRACE_VAR(langCode);
+                qDebug() << appTitle << "Lang:" << langCode << "(" << langId << ")";
 
                 // Constants
-                const int interval = 800;
+                const int interval = 700;
 
                 // App
                 QApplication app(argc, argv);
