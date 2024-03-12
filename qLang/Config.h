@@ -12,7 +12,6 @@
 #include <QWidget>
 #include <QCursor>
 
-#include <iostream>
 #include <unistd.h>
 
 #include <X11/Xlib.h>

@@ -38,7 +38,9 @@ customErrorHandler(
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    if (0) {
+    QApplication app(argc, argv);
+
+    if (1) {
         Display *display = ::XOpenDisplay(nullptr);
         if (display == nullptr) {
             std::cerr << appTitle << "cannot open display" << std::endl;
@@ -88,11 +90,27 @@ int main(int argc, char *argv[])
 
                     std::cout << appTitle << STD_TRACE_VAR(lang_id) << ", " <<  STD_TRACE_VAR(lang_code)  << std::endl;
 
+                #if 0
                     const std::string cmd = "/home/skynowa/Projects/X11KeboardLayouts/qLang/qLang " +
                         lang_code;
 
                     int iRv = std::system(cmd.c_str());
                     STD_UNUSED(iRv);
+                #else
+                    // Constants
+                    const QString appTitle = "[qLang]";
+                    const int     interval = 800;
+
+                    // App
+                    Widget widget( QString::fromStdString(lang_code) );
+                    widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint |
+                        Qt::WindowDoesNotAcceptFocus);
+                    widget.show();
+
+                    QTimer::singleShot(interval, &widget, &Widget::close);
+
+                    /// app.exec();
+                #endif
                 }
             }
         }
@@ -102,6 +120,7 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
+#if 0
     // Constants
     const QString appTitle = "[qLang]";
     const int     interval = 800;
@@ -126,5 +145,6 @@ int main(int argc, char *argv[])
     QTimer::singleShot(interval, &app, &QCoreApplication::quit);
 
     return app.exec();
+#endif
 }
 //-------------------------------------------------------------------------------------------------

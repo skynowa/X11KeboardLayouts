@@ -25,5 +25,7 @@ private:
 
     void setPixmap();
     void alignToCursor();
+
+    void x11Events(XEvent *event) final;
 };
 //-------------------------------------------------------------------------------------------------
