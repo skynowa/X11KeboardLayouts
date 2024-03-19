@@ -20,6 +20,11 @@ customErrorHandler(
     char errorText[1024] {};
     ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
+   /**
+    * \example
+    *
+    * QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).warning().noquote()
+    */
     qDebug().noquote()
         << "\n"
         << "--------------------" << appTitle << "-------------------" << "\n"
