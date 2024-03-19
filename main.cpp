@@ -20,7 +20,7 @@ customErrorHandler(
     char errorText[1024] {};
     ::XGetErrorText(display, errorEvent->error_code, errorText, sizeof(errorText));
 
-    qDebug()
+    qDebug().noquote()
         << "\n"
         << "--------------------" << appTitle << "-------------------" << "\n"
         << " Type:        " << errorEvent->type                << "\n"
@@ -65,12 +65,12 @@ int main(int argc, char *argv[])
 
     for ( ;; ) {
         qDebug() << "";
-        qDebug() << appTitle << "XNextEvent - watch...";
+        qDebug().noquote() << appTitle << "XNextEvent - watch...";
 
         XEvent event {};
         ::XNextEvent(display, &event);
 
-        qDebug() << appTitle << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
+        qDebug().noquote() << appTitle << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
 
         if (event.type == xkbEventType) {
             auto *xkbEvent = (XkbEvent *)&event;
