@@ -25,7 +25,7 @@ customErrorHandler(
     *
     * QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).warning().noquote()
     */
-    qDebug().noquote()
+    TraceLog()
         << "\n"
         << "---------------------" << appTitle << "--------------------" << "\n"
         << " Type:        " << errorEvent->type                << "\n"
@@ -69,13 +69,13 @@ int main(int argc, char *argv[])
     ::XSync(display, False);
 
     for ( ;; ) {
-        qDebug() << "";
-        qDebug().noquote() << appTitle << "XNextEvent - watch...";
+        TraceLog() << "";
+        TraceLog() << "XNextEvent - watch...";
 
         XEvent event {};
         ::XNextEvent(display, &event);
 
-        qDebug().noquote() << appTitle << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
+        TraceLog() << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
 
         if (event.type == xkbEventType) {
             auto *xkbEvent = (XkbEvent *)&event;

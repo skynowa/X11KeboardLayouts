@@ -17,6 +17,17 @@
 
 #include <StdStream/StdStream.h>
 #include <StdTest/StdTest.h>
+#include <StdLog/StdLog.h>
 //-------------------------------------------------------------------------------------------------
 #define ICONS_DIR "/home/skynowa/Projects/X11KeboardLayouts/Data"
+//-------------------------------------------------------------------------------------------------
+class TraceLog final :
+    public stdlog::Log
+{
+public:
+    TraceLog() :
+        Log("Core", Log::Level::Trace, " ")
+    {
+    }
+};
 //-------------------------------------------------------------------------------------------------
