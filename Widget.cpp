@@ -13,6 +13,11 @@ Widget::Widget(
     _layoutCode(a_layoutCode)
 {
     ui.setupUi(this);
+    setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
+        Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus |
+        Qt::WindowTransparentForInput);
+    setAttribute(Qt::WA_ShowWithoutActivating);
+    setAttribute(Qt::WA_X11DoNotAcceptFocus);
 
     _setPixmap();
     _alignToCursor();

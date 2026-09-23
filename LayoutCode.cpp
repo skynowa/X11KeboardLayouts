@@ -50,3 +50,14 @@ xkbLayoutCode(Display *a_display, unsigned int a_group)
     ::XFree(property);
     return xkbLayoutCodeFromProperty(names, a_group);
 }
+
+bool
+xkbShouldShowLayoutChange(const XkbStateNotifyEvent &a_event, int *out_observedGroup)
+{
+    if ((a_event.changed & XkbGroupStateMask) == 0 || a_event.group == *out_observedGroup) {
+        return false;
+    }
+
+    *out_observedGroup = a_event.group;
+    return a_event.event_type == KeyPress || a_event.event_type == KeyRelease;
+}

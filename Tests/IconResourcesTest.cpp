@@ -10,6 +10,7 @@ class IconResourcesTest : public QObject
 private slots:
     void loadsIcons();
     void showsTextForUnsupportedLayout();
+    void popupDoesNotAcceptFocus();
 };
 
 void
@@ -29,6 +30,16 @@ IconResourcesTest::showsTextForUnsupportedLayout()
     const QLabel *label = widget.findChild<QLabel *>(QStringLiteral("label"));
     QVERIFY(label != nullptr);
     QCOMPARE(label->text(), QStringLiteral("DE"));
+}
+
+void
+IconResourcesTest::popupDoesNotAcceptFocus()
+{
+    Widget widget(QStringLiteral("us"));
+    QVERIFY(widget.testAttribute(Qt::WA_ShowWithoutActivating));
+    QVERIFY(widget.testAttribute(Qt::WA_X11DoNotAcceptFocus));
+    QVERIFY(widget.windowFlags().testFlag(Qt::WindowDoesNotAcceptFocus));
+    QVERIFY(widget.windowFlags().testFlag(Qt::WindowTransparentForInput));
 }
 
 QTEST_MAIN(IconResourcesTest)

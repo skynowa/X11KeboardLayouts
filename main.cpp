@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
         XkbGroupStateMask);
 
     std::unique_ptr<Widget> widget;
+    int observedGroup {-1};
     QSocketNotifier notifier(ConnectionNumber(display), QSocketNotifier::Read);
     const auto onX11Ready = [&]() -> void
     {
@@ -87,9 +88,11 @@ int main(int argc, char *argv[])
                 continue;
             }
 
+            if (!xkbShouldShowLayoutChange(xkbEvent->state, &observedGroup)) {
+                continue;
+            }
+
             widget = std::make_unique<Widget>(xkbLayoutCode(display, xkbEvent->state.group));
-            widget->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
-                Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
             widget->show();
 
             const int intervalMs = 700;

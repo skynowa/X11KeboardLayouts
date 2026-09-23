@@ -9,6 +9,7 @@ class LayoutCodeTest : public QObject
 private slots:
     void resolvesConfiguredGroup();
     void usesFallbackForMissingGroup();
+    void ignoresFocusAndDuplicateGroupNotifications();
 };
 
 void
@@ -28,6 +29,38 @@ LayoutCodeTest::usesFallbackForMissingGroup()
     const QByteArray names(namesData, sizeof(namesData) - 1);
     QCOMPARE(xkbLayoutCodeFromProperty(names, 3), QStringLiteral("G4"));
     QCOMPARE(xkbLayoutCodeFromProperty({}, 0), QStringLiteral("G1"));
+}
+
+void
+LayoutCodeTest::ignoresFocusAndDuplicateGroupNotifications()
+{
+    int observedGroup {0};
+    XkbStateNotifyEvent event {};
+    event.changed = XkbGroupStateMask;
+    event.group = 1;
+
+    // Focus changes update the observed group without opening a popup.
+    event.event_type = 0;
+    QVERIFY(!xkbShouldShowLayoutChange(event, &observedGroup));
+    QCOMPARE(observedGroup, 1);
+
+    event.event_type = KeyPress;
+    QVERIFY(!xkbShouldShowLayoutChange(event, &observedGroup));
+
+    event.group = 0;
+    event.event_type = ButtonPress;
+    QVERIFY(!xkbShouldShowLayoutChange(event, &observedGroup));
+    QCOMPARE(observedGroup, 0);
+
+    event.group = 1;
+    event.event_type = KeyPress;
+    QVERIFY(xkbShouldShowLayoutChange(event, &observedGroup));
+    QCOMPARE(observedGroup, 1);
+
+    event.changed = XkbModifierStateMask;
+    event.group = 0;
+    QVERIFY(!xkbShouldShowLayoutChange(event, &observedGroup));
+    QCOMPARE(observedGroup, 1);
 }
 
 QTEST_GUILESS_MAIN(LayoutCodeTest)
