@@ -7,10 +7,10 @@
 #include "Widget.h"
 //-------------------------------------------------------------------------------------------------
 Widget::Widget(
-    const int a_langId
+    const QString &a_layoutCode
 ) :
     QWidget  (nullptr),
-    _langCode( _langIdToCode(a_langId) )
+    _layoutCode(a_layoutCode)
 {
     ui.setupUi(this);
 
@@ -18,34 +18,18 @@ Widget::Widget(
     _alignToCursor();
 }
 //-------------------------------------------------------------------------------------------------
-QString
-Widget::_langIdToCode(
-    const int a_langId
-) const
-{
-    static const QMap<int, QString> codes
-    {
-        {0, "en"},
-        {1, "ru"},
-        {2, "ua"}
-    };
-
-    auto it = codes.find(a_langId);
-    if (it == codes.cend()) {
-        qDebug() << STD_TRACE_VAR(a_langId);
-        return {};
-    }
-
-    return it.value();
-}
-//-------------------------------------------------------------------------------------------------
 void
 Widget::_setPixmap()
 {
     // https://flagicons.lipis.dev
-    const QString iconPath = QStringLiteral(":/icons/") + _langCode + QStringLiteral(".svg");
+    const QString iconCode = _layoutCode == QStringLiteral("us") ? QStringLiteral("en") : _layoutCode;
+    const QString iconPath = QStringLiteral(":/icons/") + iconCode + QStringLiteral(".svg");
     const QPixmap pixmap(iconPath);
-    STD_TEST(!pixmap.isNull());
+    if (pixmap.isNull()) {
+        ui.label->setText(_layoutCode.toUpper());
+        ui.label->setAlignment(Qt::AlignCenter);
+        return;
+    }
 
     ui.label->setPixmap(pixmap);
 }

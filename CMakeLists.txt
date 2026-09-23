@@ -42,6 +42,8 @@ find_package(X11 REQUIRED)
 set(PROJECT_SOURCES
     main.cpp
     Config.h
+    LayoutCode.h
+    LayoutCode.cpp
     Widget.h
     Widget.cpp
     Widget.ui
@@ -64,10 +66,21 @@ if (BUILD_TESTING)
     find_package(Qt6Test CONFIG REQUIRED)
     qt_add_executable(IconResourcesTest
         Tests/IconResourcesTest.cpp
+        Widget.cpp
+        Widget.h
+        Widget.ui
         Icons.qrc)
+    target_include_directories(IconResourcesTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(IconResourcesTest PRIVATE Qt6::Test Qt6::Widgets)
     add_test(NAME IconResourcesTest COMMAND IconResourcesTest)
     set_tests_properties(IconResourcesTest PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    qt_add_executable(LayoutCodeTest
+        Tests/LayoutCodeTest.cpp
+        LayoutCode.cpp)
+    target_include_directories(LayoutCodeTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(LayoutCodeTest PRIVATE Qt6::Test ${X11_LIBRARIES})
+    add_test(NAME LayoutCodeTest COMMAND LayoutCodeTest)
 endif()
 #--------------------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 
 
 #include "Widget.h"
+#include "LayoutCode.h"
 #include <QSocketNotifier>
 #include <memory>
 //-------------------------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            widget = std::make_unique<Widget>(xkbEvent->state.group);
+            widget = std::make_unique<Widget>(xkbLayoutCode(display, xkbEvent->state.group));
             widget->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
                 Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
             widget->show();
