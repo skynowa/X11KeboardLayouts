@@ -64,10 +64,6 @@ int main(int argc, char *argv[])
     ::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
         XkbGroupStateMask);
 
-    Window rootWindow = DefaultRootWindow(display);
-    ::XSelectInput(display, rootWindow, ButtonPressMask);
-    ::XSync(display, False);
-
     for ( ;; ) {
         TraceLog() << "";
         TraceLog() << "XNextEvent - watch...";
