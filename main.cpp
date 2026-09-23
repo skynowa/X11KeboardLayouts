@@ -5,6 +5,8 @@
 
 
 #include "Widget.h"
+#include <QSocketNotifier>
+#include <memory>
 //-------------------------------------------------------------------------------------------------
 const QString appTitle("[qLang]");
 //-------------------------------------------------------------------------------------------------
@@ -44,6 +46,9 @@ customErrorHandler(
 //-------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+    QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
+
     Display *display = ::XOpenDisplay(nullptr);
     STD_TEST_PTR(display);
 
@@ -64,42 +69,40 @@ int main(int argc, char *argv[])
     ::XkbSelectEventDetails(display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
         XkbGroupStateMask);
 
-    for ( ;; ) {
-        TraceLog() << "";
-        TraceLog() << "XNextEvent - watch...";
+    std::unique_ptr<Widget> widget;
+    QSocketNotifier notifier(ConnectionNumber(display), QSocketNotifier::Read);
+    const auto onX11Ready = [&]() -> void
+    {
+        while (::XPending(display) > 0) {
+            XEvent event {};
+            ::XNextEvent(display, &event);
 
-        XEvent event {};
-        ::XNextEvent(display, &event);
-
-        TraceLog() << "XNextEvent - fire:" << STD_TRACE_VAR(event.type);
-
-        if (event.type == xkbEventType) {
-            auto *xkbEvent = (XkbEvent *)&event;
-            // qDebug() << appTitle << STD_TRACE_VAR(xkbEvent->any.xkb_type);
-
-            if (xkbEvent->any.xkb_type == XkbStateNotify) {
-                const int langId = xkbEvent->state.group;
-
-                // Constants
-                const int intervalMs = 700;
-
-                // App
-                QApplication app(argc, argv);
-
-                Widget widget(langId);
-                widget.setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
-                    Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
-                widget.show();
-
-                QTimer::singleShot(intervalMs, &app, &QApplication::quit);
-
-                app.exec();
+            if (event.type != xkbEventType) {
+                continue;
             }
-        }
-    }
 
+            const auto *xkbEvent = reinterpret_cast<const XkbEvent *>(&event);
+            if (xkbEvent->any.xkb_type != XkbStateNotify) {
+                continue;
+            }
+
+            widget = std::make_unique<Widget>(xkbEvent->state.group);
+            widget->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |
+                Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
+            widget->show();
+
+            const int intervalMs = 700;
+            QTimer::singleShot(intervalMs, widget.get(), &QWidget::hide);
+        }
+    };
+    QObject::connect(&notifier, &QSocketNotifier::activated, &app, onX11Ready);
+    onX11Ready();
+
+    const int result = app.exec();
+
+    widget.reset();
     ::XCloseDisplay(display);
 
-    return EXIT_SUCCESS;
+    return result;
 }
 //-------------------------------------------------------------------------------------------------
