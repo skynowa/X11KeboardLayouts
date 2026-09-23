@@ -43,13 +43,9 @@ void
 Widget::_setPixmap()
 {
     // https://flagicons.lipis.dev
-    const QString iconPath = ICONS_DIR "/" + _langCode + ".svg";
-
-    QFileInfo checkFile(iconPath);
-    STD_TEST(checkFile.exists());
-    STD_TEST(checkFile.isFile());
-
-    QPixmap pixmap(iconPath);
+    const QString iconPath = QStringLiteral(":/icons/") + _langCode + QStringLiteral(".svg");
+    const QPixmap pixmap(iconPath);
+    STD_TEST(!pixmap.isNull());
 
     ui.label->setPixmap(pixmap);
 }

@@ -44,7 +44,8 @@ set(PROJECT_SOURCES
     Config.h
     Widget.h
     Widget.cpp
-    Widget.ui)
+    Widget.ui
+    Icons.qrc)
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES})
@@ -57,4 +58,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${X11_LIBRARIES})
 
 qt_finalize_executable(${PROJECT_NAME})
+
+include(CTest)
+if (BUILD_TESTING)
+    find_package(Qt6Test CONFIG REQUIRED)
+    qt_add_executable(IconResourcesTest
+        Tests/IconResourcesTest.cpp
+        Icons.qrc)
+    target_link_libraries(IconResourcesTest PRIVATE Qt6::Test Qt6::Widgets)
+    add_test(NAME IconResourcesTest COMMAND IconResourcesTest)
+    set_tests_properties(IconResourcesTest PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()
 #--------------------------------------------------------------------------------------------------

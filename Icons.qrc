@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="en.svg">Data/en.svg</file>
+        <file alias="ru.svg">Data/ru.svg</file>
+        <file alias="ru-ru.svg">Data/ru-ru.svg</file>
+        <file alias="ua.svg">Data/ua.svg</file>
+    </qresource>
+</RCC>
