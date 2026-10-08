@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=X11 Keyboard Layouts
+Comment=Show the active X11 keyboard layout
+Exec=qLang
+Icon=qLang
+Terminal=false
+Categories=Utility;

@@ -4,7 +4,7 @@
 #--------------------------------------------------------------------------------------------------
 
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 project(qLang CXX)
 #--------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ set(CMAKE_AUTORCC ON)
 set(DIR_HOME $ENV{HOME})
 
 # Qt
-set(CMAKE_PREFIX_PATH "${DIR_HOME}/Qt/6.6.1/gcc_64")
+set(CMAKE_PREFIX_PATH "${DIR_HOME}/Qt/6.6.1/gcc_64" CACHE STRING "Qt SDK prefix")
 
 # modules
 if (EXISTS "${CMAKE_ROOT}/Modules/CMakeLib")
@@ -84,3 +84,16 @@ if (BUILD_TESTING)
     add_test(NAME LayoutCodeTest COMMAND LayoutCodeTest)
 endif()
 #--------------------------------------------------------------------------------------------------
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(X11KeyboardLayouts_CMAKELIB_DIR "$ENV{HOME}/Projects/CMakeLib" CACHE PATH "Path to CMakeLib modules")
+    include("${X11KeyboardLayouts_CMAKELIB_DIR}/QtAppImage.cmake")
+    cmakelib_add_appimage(
+        TARGET qLang
+        DESKTOP_FILE packaging/qLang.desktop
+        ICON_FILE Data/qlang.svg
+        ICON_NAME qLang
+        ICON_SIZE scalable
+        VERSION "0.1.0"
+    )
+endif()
